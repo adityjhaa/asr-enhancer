@@ -1,3 +1,5 @@
+import heapq
+
 class Agent(object):
     def __init__(self, phoneme_table, vocabulary) -> None:
         """
@@ -5,12 +7,16 @@ class Agent(object):
         """
         self.phoneme_table = phoneme_table
         self.vocabulary = vocabulary
+        
+        self.inv_phoneme_table = {}
+        for phoneme, symbols in phoneme_table.items():
+            for symbol in symbols:
+                if symbol not in self.inv_phoneme_table:
+                    self.inv_phoneme_table[symbol] = []
+                self.inv_phoneme_table[symbol].append(phoneme)   
+        # need to keep updating this
         self.best_state = None
 
-    def generate_candidates(self, text):
-        candidates = [text]
-        return candidates
-    
     def asr_corrector(self, environment):
         """
         Your ASR corrector agent goes here. Environment object has following important members.
@@ -19,27 +25,29 @@ class Agent(object):
 
         Your agent must update environment.best_state with the corrected text discovered so far.
         """
-        self.best_state = environment.init_state
-        current_cost = environment.compute_cost(self.best_state)
-        beam_width = 5
-
-        beam = [(self.best_state, current_cost)]
-
-        while True:
+        self.best_state = environment.init_state # sentence to be corrected
+        cost = environment.compute_cost(self.best_state)
+        beam_width = 5  # Number of candidates to keep at each step
+        
+        beam = [(cost, self.best_state)]  # Each element is a tuple (current cost, current sentence as list of words)
+        heapq.heapify(beam)  # Convert list to a heap
+        
+        for i in range(len(self.best_state)):
             new_beam = []
-            for state, cost in beam:
-                candidates = self.generate_candidates(state)
-                for candidate in candidates:
-                    candidate_cost = environment.compute_cost(candidate)
-                    new_beam.append((candidate, candidate_cost))
-                    if candidate_cost < current_cost:
-                        self.best_state = candidate
-                        current_cost = candidate_cost
-            
-            beam = sorted(new_beam, key=lambda x: x[1])[:beam_width]
+            while beam:
+                _, sentence = heapq.heappop(beam)
+                current_char = sentence[i]
+                possible_corrections = self.inv_phoneme_table[current_char]
 
-            if not new_beam or min(new_beam, key=lambda x: x[1])[1] >= current_cost:
-                break
+                for correction in possible_corrections:
+                    new_sentence = sentence[:i] + [correction] + sentence[i+1:]
+                    new_cost = environment.compute_cost(new_sentence)
+                    heapq.heappush(new_beam, (new_cost, new_sentence))
 
-        environment.best_state = self.best_state
+            # Keep only the top beam_width candidates by using heapq
+            beam = heapq.nsmallest(beam_width, new_beam)
+            heapq.heapify(beam)  # Convert list to a heap
 
+        # The sentence with the lowest cost
+        best_cost, best_sentence = beam[0]
+        self.best_state = best_sentence
