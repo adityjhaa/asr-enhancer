@@ -1,3 +1,5 @@
+import time
+
 class Agent(object):
     def __init__(self, phoneme_table, vocabulary) -> None:
         """
@@ -23,6 +25,7 @@ class Agent(object):
 
         Your agent must update environment.best_state with the corrected text discovered so far.
         """
+        start_time = time.time()
         curr_state = environment.init_state
         curr_cost = environment.compute_cost(curr_state)
         self.best_state = curr_state
@@ -44,3 +47,8 @@ class Agent(object):
                     self.best_state = new_state_str
                     best_state_list = new_state
                     curr_cost = new_cost
+
+        end_time = time.time()
+        print()
+        print(self.best_state, curr_cost)
+        print('Time taken:', end_time - start_time)
