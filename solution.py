@@ -1,5 +1,3 @@
-import heapq
-
 class Agent(object):
     def __init__(self, phoneme_table, vocabulary) -> None:
         """
@@ -25,29 +23,24 @@ class Agent(object):
 
         Your agent must update environment.best_state with the corrected text discovered so far.
         """
-        self.best_state = environment.init_state # sentence to be corrected
-        cost = environment.compute_cost(self.best_state)
-        beam_width = 5  # Number of candidates to keep at each step
-        
-        beam = [(cost, self.best_state)]  # Each element is a tuple (current cost, current sentence as list of words)
-        heapq.heapify(beam)  # Convert list to a heap
-        
-        for i in range(len(self.best_state)):
-            new_beam = []
-            while beam:
-                _, sentence = heapq.heappop(beam)
-                current_char = sentence[i]
-                possible_corrections = self.inv_phoneme_table[current_char]
-
-                for correction in possible_corrections:
-                    new_sentence = sentence[:i] + [correction] + sentence[i+1:]
-                    new_cost = environment.compute_cost(new_sentence)
-                    heapq.heappush(new_beam, (new_cost, new_sentence))
-
-            # Keep only the top beam_width candidates by using heapq
-            beam = heapq.nsmallest(beam_width, new_beam)
-            heapq.heapify(beam)  # Convert list to a heap
-
-        # The sentence with the lowest cost
-        best_cost, best_sentence = beam[0]
-        self.best_state = best_sentence
+        curr_state = environment.init_state
+        curr_cost = environment.compute_cost(curr_state)
+        self.best_state = curr_state
+        best_state_list = list(self.best_state)
+                
+        for i in range(len(best_state_list)):
+            curr_char = best_state_list[i]
+            if (curr_char == ' '):
+                continue
+            
+            if curr_char not in self.inv_phoneme_table:
+                continue
+            
+            for corr_char in self.inv_phoneme_table[curr_char]:
+                new_state = best_state_list[:i] + [corr_char] + best_state_list[i+1:]
+                new_state_str = ''.join(new_state)
+                new_cost = environment.compute_cost(new_state_str)
+                if new_cost < curr_cost:
+                    self.best_state = new_state_str
+                    best_state_list = new_state
+                    curr_cost = new_cost
