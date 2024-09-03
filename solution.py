@@ -30,7 +30,8 @@ class Agent(object):
         curr_cost = environment.compute_cost(curr_state)
         self.best_state = curr_state
         best_state_list = list(self.best_state)
-                
+
+        # char correction
         for i in range(len(best_state_list)):
             curr_char = best_state_list[i]
             if (curr_char == ' '):
@@ -48,6 +49,28 @@ class Agent(object):
                     best_state_list = new_state
                     curr_cost = new_cost
 
+
+        # word addition
+        print(self.best_state, curr_cost)
+        for front in self.vocabulary + ['']:
+            new_state = [front] + [' '] + best_state_list
+            new_state_str = ''.join(new_state)
+            new_cost = environment.compute_cost(new_state_str)
+            if new_cost < curr_cost:
+                self.best_state = new_state_str
+                curr_cost = new_cost
+                print(self.best_state, curr_cost)
+
+        print(self.best_state, curr_cost)
+        for back in self.vocabulary + ['']:
+            new_state = best_state_list + [' '] + [back]
+            new_state_str = ''.join(new_state)
+            new_cost = environment.compute_cost(new_state_str)
+            if new_cost < curr_cost:
+                self.best_state = new_state_str
+                curr_cost = new_cost
+                print(self.best_state, curr_cost)
+        
         end_time = time.time()
         print()
         print(self.best_state, curr_cost)

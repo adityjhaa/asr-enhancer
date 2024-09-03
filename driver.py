@@ -89,6 +89,7 @@ def main():
     agent = Agent(phoneme_table, vocabulary)
 
     corrected_texts = []
+    error = 0
     for sample in tqdm(data):
         audio = sample['audio']['array']
         sr = sample['audio']['sampling_rate']
@@ -99,10 +100,14 @@ def main():
         try:
             agent.asr_corrector(environment)
             pred = agent.best_state
+            pred_cost = environment.compute_cost(pred)
+            error += pred_cost
         except:
             pred = None
 
         corrected_texts.append(pred)
+    avg_error = error / len(data)
+    print(f'Average error: {avg_error}')
 
     with open(args.output_file, 'w') as fp:
         json.dump(corrected_texts, fp, indent=2)
