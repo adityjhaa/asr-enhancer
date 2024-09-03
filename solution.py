@@ -61,6 +61,21 @@ class Agent(object):
                 curr_cost = new_cost
                 print(self.best_state, curr_cost)
 
+        best_state_list_save = list(self.best_state)
+
+        print(self.best_state, curr_cost)
+        for back in self.vocabulary + ['']:
+            new_state = best_state_list + [' '] + [back]
+            new_state_str = ''.join(new_state)
+            new_cost = environment.compute_cost(new_state_str)
+            if new_cost < curr_cost:
+                self.best_state = new_state_str
+                curr_cost = new_cost
+                print(self.best_state, curr_cost)
+
+        # updating for rear word check
+        best_state_list = best_state_list_save
+
         print(self.best_state, curr_cost)
         for back in self.vocabulary + ['']:
             new_state = best_state_list + [' '] + [back]
