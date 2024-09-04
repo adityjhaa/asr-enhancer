@@ -41,19 +41,32 @@ class Agent(object):
             # Generate neighbors by modifying each character
             for i in range(len(current_state_list)):
                 current_char = current_state_list[i]
+                current_char2 = "00"
+                if i < len(current_state_list) - 1:
+                    current_char2 = ''.join(current_state_list[i:i+2])
 
                 # Skip spaces or characters not in the phoneme table
-                if current_char == ' ' or current_char not in self.inv_phoneme_table:
-                    continue
+                first = current_char == ' ' or current_char not in self.inv_phoneme_table
+                second = current_char2 == "00" or current_char2 not in self.inv_phoneme_table
 
                 # Generate neighboring states by replacing the current character
-                for corr_char in self.inv_phoneme_table[current_char]:
-                    # Create a new state with the correction
-                    new_state_list = current_state_list[:i] + [corr_char] + current_state_list[i+1:]
-                    new_state_str = ''.join(new_state_list)
-                    new_cost = environment.compute_cost(new_state_str)
-                    # Collect all possible neighbors
-                    neighbors.append((new_state_str, new_cost))
+                if not first:
+                    for corr_char in self.inv_phoneme_table[current_char]:
+                        # Create a new state with the correction
+                        new_state_list = current_state_list[:i] + [corr_char] + current_state_list[i+1:]
+                        new_state_str = ''.join(new_state_list)
+                        new_cost = environment.compute_cost(new_state_str)
+                        # Collect all possible neighbors
+                        neighbors.append((new_state_str, new_cost))
+                
+                if not second:
+                    for corr_char in self.inv_phoneme_table[current_char2]:
+                        # Create a new state with the correction
+                        new_state_list = current_state_list[:i] + [corr_char] + current_state_list[i+2:]
+                        new_state_str = ''.join(new_state_list)
+                        new_cost = environment.compute_cost(new_state_str)
+                        # Collect all possible neighbors
+                        neighbors.append((new_state_str, new_cost))
 
             # Find the best neighbor with the lowest cost
             if neighbors:
