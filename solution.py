@@ -1,5 +1,3 @@
-import time
-
 class Agent(object):
     def __init__(self, phoneme_table, vocabulary) -> None:
         """
@@ -25,7 +23,6 @@ class Agent(object):
 
         Your agent must update environment.best_state with the corrected text discovered so far.
         """
-        start_time = time.time()
         current_state = environment.init_state
         current_state_list = list(current_state)
         current_cost = environment.compute_cost(current_state)
@@ -83,7 +80,6 @@ class Agent(object):
                     improved = True
 
         # word addition
-        print(self.best_state, current_cost)
         for front in self.vocabulary + ['']:
             new_state = [front] + [' '] + current_state_list
             new_state_str = ''.join(new_state)
@@ -91,24 +87,16 @@ class Agent(object):
             if new_cost < current_cost:
                 self.best_state = new_state_str
                 current_cost = new_cost
-                print(self.best_state, current_cost)
 
         current_state_list = list(self.best_state)
 
-        print(self.best_state, current_cost)
         for back in self.vocabulary + ['']:
             new_state = current_state_list + [' '] + [back]
             new_state_str = ''.join(new_state)
             new_cost = environment.compute_cost(new_state_str)
             if new_cost < current_cost:
                 self.best_state = new_state_str
-                current_cost = new_cost
-                print(self.best_state, current_cost)
-        
-        end_time = time.time()
-        print()
-        print(self.best_state, current_cost)
-        print('Time taken:', end_time - start_time)
+                current_cost = new_cost        
 
 # class Agent(object):
 #     def __init__(self, phoneme_table, vocabulary) -> None:
