@@ -1,10 +1,9 @@
 # ASR Enhancer
-## Correction Agent for ASR Errors in Voice-Enabled Assistants
 
-<hr>
+**Correction Agent for ASR Errors in Voice-Enabled Assistants**
 
-### Introduction
-The **Agent** class implements a corrective algorithm aimed at enhancing the output of **Automatic Speech Recognition** (ASR) systems. The algorithm's primary goal is to refine an initial text state to achieve a lower cost, which signifies better alignment with the desired output. The approach integrates both character-level corrections and word-level adjustments based on a phoneme table and vocabulary.
+## Overview
+ASR Enhancer aims to correct errors in automatic speech recognition (ASR) systems. This tool is particularly useful for enhancing the accuracy of voice-enabled assistants by employing phoneme-based corrections and hill-climbing algorithms to optimize output.
 
 ### Algorithm Overview
 The core idea is based on the hill climbing algorithm. Here’s a brief overview:
@@ -17,6 +16,23 @@ For each character in the sentence, the algorithm checks for its existence in th
 
 3. **Selection of Best Neighbor:**<br>
 Among the generated neighbors, the one with the lowest cost is selected, and the process is repeated.
+
+## Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/adityjhaa/asr-enhancer.git
+   ```
+2. Install the required dependencies via Conda:
+    ```bash
+    conda env create -f environment.yml
+    ```
+
+3. Activate the environment:
+    ```bash
+    conda activate asr-enhancer
+    ```
+<hr>
 
 ### Attempted Algorithms
 
