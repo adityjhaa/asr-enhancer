@@ -1,74 +1,120 @@
-# ASR Enhancer
+# **ASR Enhancer**  
 
-**Correction Agent for ASR Errors in Voice-Enabled Assistants**
+## **Overview**  
 
-## Overview
-ASR Enhancer aims to correct errors in automatic speech recognition (ASR) systems. This tool is particularly useful for enhancing the accuracy of voice-enabled assistants by employing phoneme-based corrections and hill-climbing algorithms to optimize output.
+**ASR Enhancer** is a tool designed to improve the accuracy of automatic speech recognition (ASR) systems, particularly for voice-enabled assistants. The system leverages **phoneme-based corrections** and **hill-climbing algorithms** to optimize the output of ASR models, correcting misrecognized words and phrases to deliver higher-quality transcriptions.  
 
-### Algorithm Overview
-The core idea is based on the hill climbing algorithm. Here’s a brief overview:
+---
 
-1. **State Definition:**<br>
-A state is defined as the current best sentence produced by the algorithm.
+## **Key Features**  
+- **Phoneme-Based Corrections:** Improves recognition accuracy by utilizing an inverse phoneme table to fix ASR errors.  
+- **Hill-Climbing Algorithm:** Iteratively refines sentence outputs by exploring and selecting optimal corrections based on a defined cost function.  
+- **Bigram and Unigram Analysis:** Enhances correction efficiency by identifying and addressing errors in common word pairings.  
+- **Flexible Algorithms:** Various approaches, including greedy and hill-climbing methods, were explored and evaluated for efficiency and effectiveness.  
 
-2. **Neighbor Generation:**<br>
-For each character in the sentence, the algorithm checks for its existence in the inverse phoneme table (a mapping from erroneous phonemes to their corrections). If the character or bigram exists in the table, it is replaced with its corrected representation. This process generates a tuple (state, cost) for each modification.   
+---
 
-3. **Selection of Best Neighbor:**<br>
-Among the generated neighbors, the one with the lowest cost is selected, and the process is repeated.
+## **Algorithm Overview**  
 
-## Installation
+### **Core Steps**  
+1. **State Definition:**  
+   The current best-corrected sentence is considered the "state" at each iteration.  
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/adityjhaa/asr-enhancer.git
-   ```
-2. Install the required dependencies via Conda:
-    ```bash
-    conda env create -f environment.yml
-    ```
+2. **Neighbor Generation:**  
+   - For each character in the sentence, the algorithm identifies its presence in the **inverse phoneme table**.  
+   - The phoneme table maps erroneous phonemes to their corrected forms.  
+   - Replacements are made for single characters or bigrams, generating a list of potential corrections, each associated with a cost.  
 
-3. Activate the environment:
-    ```bash
-    conda activate asr-enhancer
-    ```
-<hr>
+3. **Best Neighbor Selection:**  
+   - Among the generated neighbors, the one with the **lowest cost** is selected as the next state.  
+   - The process continues iteratively until no further improvement is possible.  
 
-### Attempted Algorithms
+---
 
-1. **Greedy Algorithm without Word Correction:**<br>
-This initial approach involved iteratively updating each character from left to right by replacing it with the lowest-cost neighbor without considering other characters in the sentence.
-    - Average Loss: 2.1136
-    - Average Time per Sentence: 13 seconds
+## **Installation**  
 
+### **Prerequisites**  
+- **Python 3.x**  
+- **Conda** (recommended for environment management)  
 
-2. **Hill Climbing without Word Correction:**<br>
-This method utilized hill climbing by considering all characters in the sentence before making updates. Note that bigrams were not checked in this approach.
-    - Average Loss: 2.0243
-    - Average Time per Sentence: 50 seconds
+### **Steps to Set Up**  
+1. Clone the repository:  
+   ```bash  
+   git clone https://github.com/adityjhaa/asr-enhancer.git  
+   cd asr-enhancer  
+   ```  
 
+2. Install required dependencies using Conda:  
+   ```bash  
+   conda env create -f environment.yml  
+   ```  
 
-3. **Greedy Algorithm with Word Updates Before Character Correction:**<br>
-Here, the first and last missing words were added in an O(n²) fashion, which proved to be time-consuming and yielded minimal improvement. Instead, adding words in two separate loops (one for the beginning and one for the end) was found to be more effective.
-    - Average Loss: 1.8454
-    - Average Time per Sentence: 25 seconds
+3. Activate the environment:  
+   ```bash  
+   conda activate asr-enhancer  
+   ```  
 
+4. Run the ASR Enhancer:  
+   ```bash  
+   python asr_enhancer.py  
+   ```  
 
-4. **Greedy Algorithm with Word Updates After Character Correction:**<br>
-Adding words after character correction was found to significantly reduce the loss compared to adding words before correction. This suggests that some added words were being incorrectly modified by the character correction algorithm.
-    - Average Loss: 1.8058
-    - Average Time per Sentence: 25 seconds
+---
 
+## **Algorithm Variants and Performance**  
 
-5. **Hill Climbing with Word Updates After Character Correction:**<br>
-Combining hill climbing with word updates after character correction resulted in improved performance. Note that bigrams were not checked in this implementation.
-    - Average Loss: 1.7099
-    - Average Time per Sentence: 55 seconds
+### 1. Greedy Algorithm Without Word Correction  
+- **Description:** Updates characters from left to right, replacing them with the lowest-cost neighbors.  
+- **Results:**  
+  - **Average Loss:** 2.1136  
+  - **Average Time per Sentence:** 13 seconds  
 
+### 2. Hill Climbing Without Word Correction  
+- **Description:** Examines all characters before making updates but does not consider bigrams.  
+- **Results:**  
+  - **Average Loss:** 2.0243  
+  - **Average Time per Sentence:** 50 seconds  
 
-6. **Word Updates After Hill Climbing with Unigrams and Bigrams Correction:**<br>
-Incorporating bigram checks into the algorithm addressed previously missed bigrams (e.g., ‘SH’) and further improved the correction process.
-    - Average Loss: 1.5158
-    - Average Time per Sentence: 60 seconds
+### 3. Greedy Algorithm with Word Updates Before Character Correction  
+- **Description:** Adds missing words to the beginning and end of the sentence, then performs character corrections.  
+- **Results:**  
+  - **Average Loss:** 1.8454  
+  - **Average Time per Sentence:** 25 seconds  
 
+### 4. Greedy Algorithm with Word Updates After Character Correction  
+- **Description:** Performs word corrections after character corrections, avoiding unnecessary modifications.  
+- **Results:**  
+  - **Average Loss:** 1.8058  
+  - **Average Time per Sentence:** 25 seconds  
 
+### 5. Hill Climbing with Word Updates After Character Correction  
+- **Description:** Combines hill climbing with word corrections applied post character correction.  
+- **Results:**  
+  - **Average Loss:** 1.7099  
+  - **Average Time per Sentence:** 55 seconds  
+
+### 6. Hill Climbing with Unigram and Bigram Corrections  
+- **Description:** Integrates bigram checks to address errors in common word pairings (e.g., "SH").  
+- **Results:**  
+  - **Average Loss:** 1.5158  
+  - **Average Time per Sentence:** 60 seconds  
+
+---
+
+## **Analysis and Insights**  
+- **Bigram Corrections:** Incorporating bigrams significantly reduced the loss, highlighting the importance of contextual analysis in phoneme corrections.  
+- **Word Updates After Character Correction:** This approach consistently outperformed others, demonstrating the effectiveness of correcting broader context only after addressing finer details.  
+- **Algorithm Choice:** While hill climbing with Word and Bigram updates achieved the best results, it required more computational time compared to greedy algorithms.  
+
+---
+
+## **Future Improvements**  
+- **Dynamic Phoneme Correction:** Enhance the inverse phoneme table with adaptive learning to handle rare or context-specific errors.  
+- **Deep Learning Integration:** Incorporate neural networks to predict corrections based on semantic understanding.  
+- **Performance Optimization:** Reduce time complexity by parallelizing bigram and unigram analyses.  
+- **Real-World Integration:** Extend support to process real-time ASR outputs from popular systems like Google ASR or Alexa.  
+
+---
+
+## **Acknowledgments**  
+This project was developed under the guidance of the **COL333: Artificial Intelligence** faculty at **IIT Delhi**. It builds upon foundational ideas in ASR error correction, phonetics, and heuristic algorithms.  
